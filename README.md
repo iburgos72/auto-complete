@@ -1,12 +1,20 @@
-# Getting Started with Create React App
+# Auto-Complete
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Run the project
 
-## Available Scripts
+#### Install dependencies
 
-In the project directory, you can run:
+```bash
+yarn install
+```
 
-### `yarn start`
+
+
+#### Run the project
+    
+```bash
+`yarn start`
+```
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
@@ -14,33 +22,43 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `yarn test`
+#### Run the unit test
+```bash
+yarn test
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in the interactive watch mode.
 
-### `yarn build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## About the solution
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### Auto-complete
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+A list of Pokémon is fetched from the Pokemon API; When the user starts typing in the input field, the list of possible options will be displayed bellow the input text. \
+The user can select one of the options by clicking on it, then it triggers an `alert()` which is replacing a redirect. A redirect is not implemented since the task is focus on creating an autocomplete\
+if the user presses clicks on the `Search` button, it will filter the list of possibles Pokemon that match with the typed text.
 
-### `yarn eject`
+#### UX
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- why not using `<select>/<option>`?\
+Those HTML tags are not very flexible, and it is not possible to style them properly.
+when users type while searching an option, they cannot see the text they already put,
+and only one option is focused instead of showing all the possible matches.\
+Having an input field with a list of options gives more flexible to edit the functionality and the style. 
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- why clicking on the `Search` button does not trigger the same action as clicking on an option?\
+the use case of the `Search` button is to filter the list of options by text, and I would like to minimize the number of actions (clicks in this case), if the user already found the element he/she was looking for, it should be able to select it without clicking on the `Search` button and trigger the expected action
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
+- Move with the arrow keys and search/select with `Enter/Return`\
+I tried to implement a similar functionality as the one the user have with `select/option`, in which users are able to ove with arrow keys and select with `Enter/Return` key. this way they can navigate through the list of options without using the mouse.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- why the input doesn't display the options once the user starts to type?\
+Depending on the number of options, the performance of the app might be affected, so I decided to display the options only when the user typed more than 3 characters.
+
+
+- What could be improved?\
+I think the auto-complete could have a sections called `Recent searches` in which the user can see the last 5 searches using a LRU structure.
+  This way the user can have quick access to the last searches and avoid typing the same text again.

@@ -8,12 +8,12 @@ import {
     THead,
 } from "./components";
 import {
-    pokemonState,
-    initialState,
-    pokedex,
-    search,
     filter,
+    initialState,
     options,
+    pokedex,
+    pokemonState,
+    search,
 } from './store'
 
 import './App.css';

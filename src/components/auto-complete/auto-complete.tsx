@@ -1,6 +1,6 @@
 import React, {
-    useRef,
     LegacyRef,
+    useRef,
     useState,
 } from "react";
 
@@ -24,25 +24,32 @@ export const AutoComplete = ({
     onEnterKeyPress,
     onSelectSuggestion,
 }: AutoCompleteProps) => {
-    const containerRef = useRef<HTMLDivElement>();
     const suggestionRef = useRef<HTMLDivElement>();
     const inputRef = useRef<HTMLInputElement>();
     const [focusElement, setFocusElement] = useState(-1);
 
+    // TODO: the any should be replaced with the correct type: KeyboardEvent<HTMLInputElement>
+    // but there were some issues with the types
     const handleInputKeyPress = (e: any) => {
         if (e.key === 'Enter') {
             if (focusElement > -1) {
+                // if the user presses enter while a suggestion is focused,
+                // it will simulate a click in the suggestion element
                 const suggestionNodes =
                     (suggestionRef.current
                         ?.childNodes as NodeListOf<HTMLDivElement>) ?? [];
                 suggestionNodes[focusElement].click();
                 reset();
             } else {
+                // if the user presses enter while the input element is focused,
+                // this will exec the onEnterKeyPress callback
                 onEnterKeyPress?.(valueInput ?? '');
             }
         }
     };
 
+    // TODO: the any should be replaced with the correct type: KeyboardEvent<HTMLInputElement>
+    // but there were some issues with the types
     const handleAutoSuggestKeyPress = (e: any) => {
         const suggestionNodes =
             (suggestionRef.current?.childNodes as NodeListOf<HTMLDivElement>) ??
@@ -50,6 +57,7 @@ export const AutoComplete = ({
         if (suggestionNodes.length === 0) return;
 
         if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                // this allows navigating through the suggestions with arrow keys
             e.preventDefault();
 
             const step = e.key === 'ArrowDown' ? 1 : -1;
@@ -82,7 +90,6 @@ export const AutoComplete = ({
         <div
             onKeyDown={handleAutoSuggestKeyPress}
             className="flex auto-complete-container"
-            ref={containerRef as LegacyRef<HTMLDivElement>}
         >
             <div className="flex align-center">
                 <input
