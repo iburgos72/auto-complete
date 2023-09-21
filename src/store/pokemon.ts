@@ -1,12 +1,17 @@
-import { Pokemon } from "../api"
+import { Pokemon } from "../api/models"
+import { getOptions } from "./pokemon.utils";
 
 const MAX_NUMBER_OF_OPTIONS = 5;
 
+// ACTIONS
 enum ActionType {
   POKEDEX = "POKEDEX",
   SEARCH = "SEARCH",
+  FILTER = "FILTER",
+  OPTIONS = "OPTIONS",
 }
 
+// INTERFACES
 interface Pokedex {
   type: ActionType.POKEDEX;
   payload: Pokemon[];
@@ -17,52 +22,68 @@ interface Search {
   payload: string;
 }
 
-type StateAction = Pokedex | Search;
+interface Options {
+  type: ActionType.OPTIONS;
+  payload: Pokemon[];
+}
 
+interface Filter {
+    type: ActionType.FILTER;
+}
+
+type StateAction = Pokedex | Search | Filter | Options;
+
+// STATE
 type State = {
   pokedex: Pokemon[] | null,
   search: string,
-  options: string[],
-  filteredPokedex: Pokemon[],
+  options: Pokemon[],
+  filteredPokedex: Pokemon[] | null,
 }
 
 export const initialState: State = {
   pokedex: null,
   search: "",
   options: [],
-  filteredPokedex: [],
+  filteredPokedex: null,
 };
 
 export const pokemonState = (state: State = initialState, action: StateAction) => {
   switch (action.type) {
     case ActionType.POKEDEX:
-      return { ...state, pokedex: action.payload };
+      return {
+        ...state,
+        pokedex: action.payload,
+        filteredPokedex: action.payload,
+      };
     case ActionType.SEARCH:
       return {
         ...state,
         search: action.payload,
-        options: getOptions(state.pokedex!, action.payload),
+        options: getOptions(state.pokedex!, action.payload, MAX_NUMBER_OF_OPTIONS),
+      };
+    case ActionType.OPTIONS:
+      return {
+        ...state,
+        options: action.payload,
+      }
+    case ActionType.FILTER:
+      return {
+        ...state,
+        filteredPokedex: getOptions(state.pokedex!, state.search)
       };
     default:
       return state;
   }
 };
 
+// ACTION CREATORS
 export const pokedex = (pokedex: Pokemon[]): Pokedex => ({ type: ActionType.POKEDEX, payload: pokedex });
 export const search = (search: string): Search => ({ type: ActionType.SEARCH, payload: search });
-
-const getOptions = (pokedex: Pokemon[], search: string): string[] => {
-  const options: string[] = [];
-  for(let i = 0; i < pokedex.length; i++) {
-    if(pokedex[i].name.indexOf(search) !== -1) {
-      options.push(pokedex[i].name);
-    }
-
-    if(options.length === MAX_NUMBER_OF_OPTIONS) {
-      break;
-    }
-  }
-
-  return options;
-}
+export const options = (options: Pokemon[]): Options => ({ type: ActionType.OPTIONS, payload: options });
+export const filter = (): Promise<Filter> => new Promise((resolve) => {
+  setTimeout(() => {
+    resolve({ type: ActionType.FILTER });
+  }, 300);
+});
 

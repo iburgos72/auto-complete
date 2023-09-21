@@ -1,13 +1,27 @@
-import React, {useEffect, useReducer} from 'react';
+import React, { ReactNode, useEffect, useReducer } from 'react';
 
-import { getPokedex } from "./api/requests/pokemon";
-import { pokemonState, initialState, pokedex, search } from './store'
+import { getPokedex } from "./api/requests";
+import {
+    AutoComplete,
+    HighlightedText,
+    TBody,
+    THead,
+} from "./components";
+import {
+    pokemonState,
+    initialState,
+    pokedex,
+    search,
+    filter,
+    options,
+} from './store'
 
 import './App.css';
-import { AutoComplete } from "./components";
 
 const App = () => {
     const [state, dispatch]= useReducer(pokemonState, initialState)
+    const [showHighlight, setShowHighlight] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
 
     useEffect(() => {
         (async () => {
@@ -20,35 +34,61 @@ const App = () => {
         return <div>Loading...</div>
     }
 
+    const onSelectedSuggestion = async(value: string) => {
+        alert(`Redirect to /${value}`);
+        setIsLoading(true);
+        setShowHighlight(false);
+        setIsLoading(false);
+    }
+
+    const onEnterKeyPress = async () => {
+        setIsLoading(true);
+        dispatch(options([]))
+        const data = await filter()
+        dispatch(data);
+        setShowHighlight(true);
+        setIsLoading(false);
+    }
+
+    const onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(search(event.target.value));
+        setShowHighlight(false);
+    }
+
+    const buildTableData = () => {
+        const data: ReactNode[][] = [];
+        for(let i = 0; state.filteredPokedex && i < state.filteredPokedex.length; i++) {
+            const { name } = state.filteredPokedex[i];
+            data.push([
+                <button onClick={() => onSelectedSuggestion(name)} className="button-pokemon">
+                    {showHighlight
+                        ? <HighlightedText str={name} highlightStr={state.search} />
+                        : <span className="capitalize">{name}</span>
+                    }
+                </button>
+            ]);
+        }
+        return data;
+    }
+
     return (
-        <div className="App">
+        <div>
             <AutoComplete
-                onChangeInput={(
-                    event => dispatch(search(event.target.value))
-                )}
+                onChangeInput={onChangeInput}
                 valueInput={state.search}
-                options={state.options}
-                onSelectSuggestion={(value) => {
-                    alert(value);
-                    dispatch(search(''));
-                }}
+                options={state.options.map((option) => option.name)}
+                onSelectSuggestion={onSelectedSuggestion}
+                onEnterKeyPress={onEnterKeyPress}
             />
-            <table>
-                <thead>
-                <tr>
-                    {["name"].map((column, index) => (
-                        <th key={index}>{column}</th>
-                    ))}
-                </tr>
-                </thead>
-                <tbody>
-                {state.pokedex.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                        <td>{row.name}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
+            {isLoading
+                ? <div>Loading...</div>
+                : (
+                    <table>
+                        <THead headers={["Pokemon"]} />
+                        <TBody data={buildTableData()} />
+                    </table>
+                )
+            }
         </div>
     );
 }

@@ -1,0 +1,9 @@
+.highlight {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.normal-text {
+    color: #333;
+    text-transform: capitalize;
+}

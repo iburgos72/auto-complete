@@ -4,7 +4,8 @@ import React, {
     useState,
 } from "react";
 
-import { clamp, getHighlightedText } from "../../utils";
+import { HighlightedText } from "../";
+import { clamp } from "../../utils";
 
 import './auto-complete.css';
 
@@ -24,6 +25,7 @@ export const AutoComplete = ({
     onSelectSuggestion,
 }: AutoCompleteProps) => {
     const containerRef = useRef<HTMLDivElement>();
+    const suggestionRef = useRef<HTMLDivElement>();
     const inputRef = useRef<HTMLInputElement>();
     const [focusElement, setFocusElement] = useState(-1);
 
@@ -31,9 +33,10 @@ export const AutoComplete = ({
         if (e.key === 'Enter') {
             if (focusElement > -1) {
                 const suggestionNodes =
-                    (containerRef.current
+                    (suggestionRef.current
                         ?.childNodes as NodeListOf<HTMLDivElement>) ?? [];
                 suggestionNodes[focusElement].click();
+                reset();
             } else {
                 onEnterKeyPress?.(valueInput ?? '');
             }
@@ -42,7 +45,7 @@ export const AutoComplete = ({
 
     const handleAutoSuggestKeyPress = (e: any) => {
         const suggestionNodes =
-            (containerRef.current?.childNodes as NodeListOf<HTMLDivElement>) ??
+            (suggestionRef.current?.childNodes as NodeListOf<HTMLDivElement>) ??
             [];
         if (suggestionNodes.length === 0) return;
 
@@ -79,18 +82,28 @@ export const AutoComplete = ({
         <div
             onKeyDown={handleAutoSuggestKeyPress}
             className="flex auto-complete-container"
+            ref={containerRef as LegacyRef<HTMLDivElement>}
         >
-            <input
-                onChange={onChangeInput}
-                placeholder="Search for a pokemon"
-                value={valueInput}
-                ref={inputRef as LegacyRef<HTMLInputElement>}
-                onKeyUp={handleInputKeyPress}
-            />
+            <div className="flex align-center">
+                <input
+                    className="input"
+                    onChange={onChangeInput}
+                    placeholder="Search for a pokemon"
+                    value={valueInput}
+                    ref={inputRef as LegacyRef<HTMLInputElement>}
+                    onKeyUp={handleInputKeyPress}
+                />
+                <button
+                    onClick={() => onEnterKeyPress?.(valueInput ?? '')}
+                    className="search-button"
+                >
+                    <span>Search</span>
+                </button>
+            </div>
             {valueInput.length >= 3 && options.length > 0 && (
                 <div
                     className="flex column suggestion-container"
-                    ref={containerRef as LegacyRef<HTMLDivElement>}
+                    ref={suggestionRef as LegacyRef<HTMLDivElement>}
                     onMouseEnter={reset}
                 >
                     {options.map((suggestion, i) => (
@@ -99,9 +112,7 @@ export const AutoComplete = ({
                             onClick={() => onSelectSuggestion(suggestion)}
                             key={suggestion}
                         >
-                            {getHighlightedText(suggestion, valueInput).map((part, idx) => (
-                                idx % 2 === 1 ? <b key={idx}>{part}</b> : <span key={idx}>{part}</span>
-                            ))}
+                            <HighlightedText str={suggestion} highlightStr={valueInput} />
                         </button>
                     ))}
                 </div>
