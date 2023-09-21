@@ -23,9 +23,15 @@ const App = () => {
     return (
         <div className="App">
             <AutoComplete
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => dispatch(search(event.target.value))}
-                value={state.search}
+                onChangeInput={(
+                    event => dispatch(search(event.target.value))
+                )}
+                valueInput={state.search}
                 options={state.options}
+                onSelectSuggestion={(value) => {
+                    alert(value);
+                    dispatch(search(''));
+                }}
             />
             <table>
                 <thead>

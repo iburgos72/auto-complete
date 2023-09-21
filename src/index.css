@@ -11,3 +11,35 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px; /* Add some spacing at the bottom */
+  font-family: Arial, sans-serif; /* Specify your desired font */
+}
+
+/* Style table headers (optional if you have header rows) */
+th {
+  background-color: #f2f2f2; /* Header background color */
+  padding: 10px;
+  text-align: left;
+  font-weight: bold;
+  border-bottom: 2px solid #ccc; /* Add a bottom border for separation */
+}
+
+/* Style table cells */
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ccc; /* Add a bottom border for separation */
+}
+
+/* Style table cells in the last row (optional) */
+tr:last-child td {
+  border-bottom: none; /* Remove the bottom border from the last row */
+}
+
+/* Style table cell hover effect (optional) */
+td:hover {
+  background-color: #f5f5f5; /* Background color on hover */
+}

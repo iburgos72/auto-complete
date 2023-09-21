@@ -11,4 +11,4 @@ export const fetchData = <T>(url: string, options: RequestInit = {}): Promise<T>
         });
 }
 
-export const POKEDEX_API: string = "https://pokeapi.co/api/v2/pokemon?limit=1000";
+export const POKEDEX_API: string = "https://pokeapi.co/api/v2/pokemon?limit=1300";
